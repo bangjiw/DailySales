@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input Penjualan</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    width:90%;
+    max-width:420px;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    font-size:22px;
+    margin-top:15px;
+    border:2px solid #ddd;
+    border-radius:10px;
+    text-align:right;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+#mulai{
+    background:#28a745;
+    color:white;
+}
+
+#next{
+    background:#007bff;
+    color:white;
+}
+
+#back{
+    background:#6c757d;
+    color:white;
+}
+
+pre{
+    white-space:pre-wrap;
+    font-size:18px;
+    line-height:1.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div id="awal">
+<h2>Input Penjualan</h2>
+<button id="mulai">Mulai</button>
+</div>
+
+<div id="form" style="display:none;">
+
+<h2 id="judul"></h2>
+
+<input
+id="nominal"
+type="tel"
+inputmode="numeric"
+autocomplete="off"
+placeholder="0">
+
+<button id="back">Back</button>
+<button id="next">Next</button>
+
+</div>
+
+<div id="hasil" style="display:none;">
+<h2>Hasil</h2>
+
+<pre id="output"></pre>
+
+<button id="copyData">Salin Data</button>
+<button id="copyTotal">Salin Total</button>
+
+</div>
+
+</div>
+
+<script>
+
+const data=[
+"Cash",
+"GoFood",
+"GrabFood",
+"Shopeefood",
+"Qris",
+"Tiktok",
+"Qpon"
+];
+
+let nilai={};
+let index=0;
+
+const awal=document.getElementById("awal");
+const form=document.getElementById("form");
+const hasil=document.getElementById("hasil");
+
+const judul=document.getElementById("judul");
+const input=document.getElementById("nominal");
+
+function format(x){
+    x=x.replace(/\D/g,"");
+    if(x=="") return "";
+    return Number(x).toLocaleString("id-ID");
+}
+
+function tampil(){
+    judul.innerHTML=data[index];
+    input.value=nilai[data[index]] || "";
+    input.focus();
+}
+
+input.addEventListener("input",function(){
+    this.value=format(this.value);
+});
+
+document.getElementById("mulai").onclick=function(){
+    awal.style.display="none";
+    form.style.display="block";
+    tampil();
+}
+
+document.getElementById("next").onclick=function(){
+
+    let angka=input.value.replace(/\./g,"");
+
+    if(angka=="")
+        angka="0";
+
+    nilai[data[index]]=format(angka);
+
+    if(index<data.length-1){
+
+        index++;
+        tampil();
+
+    }else{
+
+        form.style.display="none";
+        hasil.style.display="block";
+
+        let teks="";
+let total=0;
+
+window.dataCopy="";
+window.totalCopy="";
+
+data.forEach(x=>{
+    let isi=nilai[x] || "0";
+
+    total += Number(isi.replace(/\./g,""));
+
+    let nama = "";
+
+switch(x){
+    case "Cash":
+        nama = "Cash                : ";
+        break;
+    case "GoFood":
+        nama = "GoFood           : ";
+        break;
+    case "GrabFood":
+        nama = "GrabFood       : ";
+        break;
+    case "Shopeefood":
+        nama = "Shopeefood   : ";
+        break;
+    case "Qris":
+        nama = "Qris                  : ";
+        break;
+    case "Tiktok":
+        nama = "Tiktok               : ";
+        break;
+    case "Qpon":
+        nama = "Qpon                : ";
+        break;
+}
+
+let baris = nama + "Rp." + isi + ",-\n";
+
+    teks += baris;
+    window.dataCopy += baris;
+});
+
+        teks += "\n=============================\n";
+teks += "TOTAL".padEnd(18," ")+" : Rp."+total.toLocaleString("id-ID")+",-";
+
+window.totalCopy = "Rp."+total.toLocaleString("id-ID")+",-";
+
+document.getElementById("output").textContent=teks;
+
+    }
+
+}
+document.getElementById("copyData").onclick=function(){
+
+    navigator.clipboard.writeText(window.dataCopy);
+
+    alert("Data berhasil disalin");
+
+}
+
+document.getElementById("copyTotal").onclick=function(){
+
+    navigator.clipboard.writeText(window.totalCopy);
+
+    alert("Total berhasil disalin");
+
+}
+document.getElementById("back").onclick=function(){
+
+    let angka=input.value.replace(/\./g,"");
+
+    if(angka=="")
+        angka="0";
+
+    nilai[data[index]]=format(angka);
+
+    if(index>0){
+
+        index--;
+        tampil();
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
