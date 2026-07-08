@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Input Penjualan</title>
+<title>Daily Sales Nih</title>
 
 <style>
 *{
@@ -16,9 +16,17 @@
 body{
     background:#f2f2f2;
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
     height:100vh;
+}
+
+.copyright{
+    font-size:13px;
+    color:#777;
+    text-align:center;
+    margin:12px 0;
 }
 
 .card{
@@ -61,34 +69,53 @@ button{
 }
 
 #next{
-    background:#007bff;
+    background:#28a745;
     color:white;
 }
 
 #back{
-    background:#6c757d;
+    background:#495057;
     color:white;
+}
+.nav-btn{
+    display:flex;
+    gap:12px;
+    margin-top:15px;
+}
+
+.nav-btn button{
+    flex:1;
+    margin-top:0;
 }
 
 pre{
-    white-space:pre-wrap;
-    font-size:18px;
-    line-height:1.8;
+    font-family:Consolas,"Courier New",monospace;
+    white-space:pre;
+    font-size:16px;
+    line-height:1.7;
+}
+#progress{
+    text-align:center;
+    color:#888;
+    font-size:14px;
+    margin-bottom:8px;
 }
 </style>
 </head>
 
 <body>
-
+<div class="copyright">
+    © 2026 Daily Sales BBT Ciwidey • BangJiwCorp
+</div>
 <div class="card">
 
 <div id="awal">
 <h2>Input Penjualan</h2>
-<button id="mulai">Mulai</button>
+<button id="mulai">Gaskeun</button>
 </div>
 
 <div id="form" style="display:none;">
-
+<div id="progress"></div>
 <h2 id="judul"></h2>
 
 <input
@@ -98,23 +125,28 @@ inputmode="numeric"
 autocomplete="off"
 placeholder="0">
 
-<button id="back">Back</button>
-<button id="next">Next</button>
+<div class="nav-btn">
+    <button id="back">Saacana</button>
+    <button id="next">Next</button>
+</div>
 
 </div>
 
 <div id="hasil" style="display:none;">
-<h2>Hasil</h2>
+<h2>=====  Hasilna  =====</h2>
 
 <pre id="output"></pre>
 
 <button id="copyData">Salin Data</button>
-<button id="copyTotal">Salin Total</button>
+<button id="copyTotal">Salin Total Penjualan</button>
+<button id="copyPendapatan">Salin Total Pendapatan</button>
 
 </div>
 
 </div>
-
+<div class="copyright">
+    © 2026 Daily Sales BBT Ciwidey • All Rights Reserved
+</div>
 <script>
 
 const data=[
@@ -124,7 +156,8 @@ const data=[
 "Shopeefood",
 "Qris",
 "Tiktok",
-"Qpon"
+"Qpon",
+"Pendapatan"
 ];
 
 let nilai={};
@@ -136,6 +169,7 @@ const hasil=document.getElementById("hasil");
 
 const judul=document.getElementById("judul");
 const input=document.getElementById("nominal");
+const progress = document.getElementById("progress");
 
 function format(x){
     x=x.replace(/\D/g,"");
@@ -144,8 +178,10 @@ function format(x){
 }
 
 function tampil(){
-    judul.innerHTML=data[index];
-    input.value=nilai[data[index]] || "";
+    progress.textContent = (index + 1) + " / " + data.length;
+
+    judul.textContent = data[index];
+    input.value = nilai[data[index]] || "";
     input.focus();
 }
 
@@ -180,14 +216,25 @@ document.getElementById("next").onclick=function(){
 
         let teks="";
 let total=0;
+let pendapatan=0;
 
-window.dataCopy="";
-window.totalCopy="";
-
+window.dataCopy = "";
+window.totalCopy = "";
+window.totalPendapatanCopy = "";
+let teksLayout = "";
 data.forEach(x=>{
     let isi=nilai[x] || "0";
+    // Untuk tampilan
+let namaLayout = x.padEnd(12, " ");
+teksLayout += namaLayout + " : Rp." + isi + ",-\n";
 
-    total += Number(isi.replace(/\./g,""));
+    let angka = Number(isi.replace(/\./g,""));
+
+if(x=="Pendapatan"){
+    pendapatan = angka;
+}else{
+    total += angka;
+}
 
     let nama = "";
 
@@ -213,22 +260,57 @@ switch(x){
     case "Qpon":
         nama = "Qpon                : ";
         break;
+    case "Pendapatan":
+nama = "Pendapatan   : ";
+break;
 }
 
 let baris = nama + "Rp." + isi + ",-\n";
 
     teks += baris;
+
+if(x != "Pendapatan"){
     window.dataCopy += baris;
+}
 });
+let totalPendapatan = total + pendapatan;
+teksLayout += "\n=============================\n";
+teksLayout += "TOTAL PENJUALAN : Rp."+total.toLocaleString("id-ID")+",-\n\n";
+teksLayout += "Pendapatan      : Rp."+pendapatan.toLocaleString("id-ID")+",-\n";
+teksLayout += "=============================\n";
+teksLayout += "TOTAL PENDAPATAN : Rp."+totalPendapatan.toLocaleString("id-ID")+",-";
 
-        teks += "\n=============================\n";
-teks += "TOTAL".padEnd(18," ")+" : Rp."+total.toLocaleString("id-ID")+",-";
 
-window.totalCopy = "Rp."+total.toLocaleString("id-ID")+",-";
 
-document.getElementById("output").textContent=teks;
+teks += "\n=============================\n";
+teks += "TOTAL PENJUALAN : Rp."+total.toLocaleString("id-ID")+",-\n\n";
+teks += "Pendapatan      : Rp."+pendapatan.toLocaleString("id-ID")+",-\n";
+teks += "=============================\n";
+teks += "TOTAL PENDAPATAN : Rp."+totalPendapatan.toLocaleString("id-ID")+",-";
+
+window.totalCopy = total.toLocaleString("id-ID");
+window.totalPendapatanCopy = totalPendapatan.toLocaleString("id-ID");
+
+
+if(!confirm("Pastikan data Ngges bener.\n\n" + teks)){
+    form.style.display = "block";
+    hasil.style.display = "none";
+    tampil();
+    return;
+}
+
+document.getElementById("output").textContent = teksLayout;
+
+
 
     }
+
+}
+document.getElementById("copyPendapatan").onclick = function(){
+
+    navigator.clipboard.writeText(window.totalPendapatanCopy);
+
+    alert("Total pendapatan berhasil disalin");
 
 }
 document.getElementById("copyData").onclick=function(){
