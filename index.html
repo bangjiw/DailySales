@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Sales Kuy</title>
+<title>Daily Sales Nih</title>
 
 <style>
 *{
@@ -110,7 +110,7 @@ pre{
 <div class="card">
 
 <div id="awal">
-<h2>Daily Sales Kuy</h2>
+<h2>Input Penjualan</h2>
 <button id="mulai">Gaskeun</button>
 </div>
 
@@ -299,7 +299,18 @@ if(!confirm("Pastikan data Ngges bener.\n\n" + teks)){
     return;
 }
 
-document.getElementById("output").textContent = teksLayout;
+const output = document.getElementById("output");
+output.textContent = teksLayout;
+
+setTimeout(() => {
+    let size = 16;
+    output.style.fontSize = size + "px";
+
+    while (output.scrollWidth > output.clientWidth && size > 8) {
+        size--;
+        output.style.fontSize = size + "px";
+    }
+}, 0);
 
 
 
@@ -349,4 +360,4 @@ document.getElementById("back").onclick=function(){
 </script>
 
 </body>
-</html>
+    </html>
